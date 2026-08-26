@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="320" viewBox="0 0 1200 320"
+     role="img" aria-labelledby="wf-title wf-desc"
+     font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR','Malgun Gothic',sans-serif">
+  <title id="wf-title">빨간펜 실습 파이프라인</title>
+  <desc id="wf-desc">문진 12문항이 문진관을 거쳐 체크리스트가 되고, 사람이 승인해야 통과하는 게이트를 지난 뒤, 편집관·질문관·답변관 세 위원이 동시에 일해 브라우저 결과 화면을 만든다.</desc>
+
+  <rect x="0.5" y="0.5" width="1199" height="319" rx="20" fill="#fafafa" stroke="#e4e4e7"/>
+
+  <text x="48" y="50" font-size="22" font-weight="700" fill="#18181b">실습 파이프라인</text>
+  <text x="48" y="74" font-size="16" fill="#71717a">8개 장 동안 이 흐름을 한 조각씩 직접 만든다</text>
+
+  <!-- stage 1: intake -->
+  <g>
+    <rect x="40" y="150" width="150" height="94" rx="12" fill="#ffffff" stroke="#e4e4e7" stroke-width="1.5"/>
+    <text x="115" y="190" text-anchor="middle" font-size="21" font-weight="700" fill="#18181b">문진</text>
+    <text x="115" y="215" text-anchor="middle" font-size="15" fill="#71717a">12개 질문</text>
+  </g>
+
+  <path d="M196 197 L228 197" stroke="#a1a1aa" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- stage 2: intaker -->
+  <g>
+    <rect x="234" y="144" width="180" height="106" rx="12" fill="#ffffff" stroke="#e4e4e7" stroke-width="1.5"/>
+    <text x="324" y="180" text-anchor="middle" font-size="20" font-weight="700" fill="#18181b">① 문진관</text>
+    <text x="324" y="206" text-anchor="middle" font-size="15" fill="#71717a">체크리스트+신뢰등급</text>
+    <text x="324" y="228" text-anchor="middle" font-size="14" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#a1a1aa">weight_rubric</text>
+  </g>
+
+  <path d="M420 197 L452 197" stroke="#a1a1aa" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- gate: HITL checkpoint on the connector -->
+  <g>
+    <rect x="458" y="160" width="140" height="74" rx="10" fill="#fff1f2" stroke="#be123c" stroke-width="1.5"/>
+    <text x="528" y="192" text-anchor="middle" font-size="17" font-weight="700" fill="#be123c">◆ 승인 게이트</text>
+    <text x="528" y="212" text-anchor="middle" font-size="14" fill="#be123c">사람이 확인해야</text>
+    <text x="528" y="228" text-anchor="middle" font-size="14" fill="#be123c">통과한다</text>
+  </g>
+
+  <path d="M604 197 L636 197" stroke="#a1a1aa" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- stage 3: three committee agents running concurrently -->
+  <g>
+    <rect x="642" y="128" width="224" height="42" rx="10" fill="#ffffff" stroke="#e4e4e7" stroke-width="1.5"/>
+    <text x="660" y="154" font-size="16" font-weight="700" fill="#18181b">② 편집관</text>
+    <text x="854" y="154" text-anchor="end" font-size="14" fill="#71717a">빨간줄·작성가이드</text>
+
+    <rect x="642" y="177" width="224" height="42" rx="10" fill="#ffffff" stroke="#e4e4e7" stroke-width="1.5"/>
+    <text x="660" y="203" font-size="16" font-weight="700" fill="#18181b">③ 질문관</text>
+    <text x="854" y="203" text-anchor="end" font-size="14" fill="#71717a">예상 질문</text>
+
+    <rect x="642" y="226" width="224" height="42" rx="10" fill="#ffffff" stroke="#e4e4e7" stroke-width="1.5"/>
+    <text x="660" y="252" font-size="16" font-weight="700" fill="#18181b">④ 답변관</text>
+    <text x="854" y="252" text-anchor="end" font-size="14" fill="#71717a">답변초안·준비물</text>
+
+    <path d="M874 132 Q892 197 874 264" fill="none" stroke="#a1a1aa" stroke-width="1.5"/>
+    <text x="882" y="202" font-size="15" fill="#71717a">동시에</text>
+  </g>
+
+  <path d="M934 197 L966 197" stroke="#a1a1aa" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- stage 4: browser result -->
+  <g>
+    <rect x="972" y="144" width="188" height="106" rx="12" fill="#ffffff" stroke="#e4e4e7" stroke-width="1.5"/>
+    <text x="1066" y="182" text-anchor="middle" font-size="20" font-weight="700" fill="#18181b">결과 화면</text>
+    <text x="1066" y="206" text-anchor="middle" font-size="15" fill="#71717a">준비 목록까지</text>
+    <text x="1066" y="228" text-anchor="middle" font-size="14" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" fill="#a1a1aa">web/index.html</text>
+  </g>
+
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#a1a1aa"/>
+    </marker>
+  </defs>
+</svg>

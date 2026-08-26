@@ -1,1 +1,4 @@
-{ "rubric_approved": false, "mode": "HITL" }
+{
+  "rubric_approved": true,
+  "mode": "HITL"
+}

@@ -1,16 +1,59 @@
 {
   "hooks": {
     "SubagentStart": [
-      { "hooks": [ { "type": "command", "async": true,
-        "command": "jq -c '{ts: now|todate, ev: \"start\", agent: .agent_type}' >> logs/trace.jsonl" } ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "async": true,
+            "command": "bash scripts/trace-log.sh start || true"
+          }
+        ]
+      }
     ],
     "SubagentStop": [
-      { "hooks": [ { "type": "command", "async": true,
-        "command": "jq -c '{ts: now|todate, ev: \"stop\", agent: .agent_type}' >> logs/trace.jsonl" } ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "async": true,
+            "command": "bash scripts/trace-log.sh stop || true"
+          }
+        ]
+      }
     ],
     "PreToolUse": [
-      { "matcher": "mcp__redpen-desk__save_rubric",
-        "hooks": [ { "type": "command", "command": "bash .claude/gate.sh" } ] }
+      {
+        "matcher": "mcp__redpen-desk__save_rubric",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/gate.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__redpen-desk__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "async": true,
+            "command": "bash scripts/trace-log.sh tool || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp__redpen-desk__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "async": true,
+            "command": "bash scripts/trace-log.sh tool_done || true"
+          }
+        ]
+      }
     ]
   }
 }

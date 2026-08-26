@@ -15,7 +15,7 @@
   "rubric": [
     {
       "id": "R1",
-      "title": "수치에 출처·기간·집계기준",
+      "title": "숫자에 출처·기간·집계 기준",
       "confidence": "high",
       "score": 5,
       "basis": [
@@ -27,7 +27,7 @@
     },
     {
       "id": "R2",
-      "title": "결론이 첫 화면에 있을 것",
+      "title": "첫 화면의 결론",
       "confidence": "medium",
       "score": 3,
       "basis": [
@@ -38,7 +38,7 @@
     },
     {
       "id": "R3",
-      "title": "대안은 2개 이상",
+      "title": "대안 2개 이상",
       "confidence": "medium",
       "score": 2,
       "basis": [
@@ -58,7 +58,7 @@
     },
     {
       "id": "R6",
-      "title": "완료 시점 명시",
+      "title": "완료 시점",
       "confidence": "low",
       "score": 1,
       "basis": [

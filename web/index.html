@@ -3,88 +3,599 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>빨간펜 — 결과</title>
+<title>빨간펜</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <style>
-  :root { --ink:#111; --mid:#777; --line:#ddd; --bg:#fff; --red:#c0392b; --faint:#fafafa; }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink); font-size:14px; line-height:1.6;
-         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif; }
-  .wrap { max-width:1400px; margin:0 auto; padding:36px 28px 80px; }
-  .head { border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:28px; }
-  .head h1 { font-size:24px; font-weight:600; margin:0 0 6px; letter-spacing:-.01em; }
-  .head h1 em { font-style:normal; color:var(--red); }
-  .meta { color:var(--mid); font-size:12.5px; }
-  .warn { background:#f4f4f4; border:1px solid var(--line); padding:10px 14px;
-          margin-bottom:20px; font-size:13px; }
-  .cols { display:grid; grid-template-columns:1.5fr 1fr; gap:36px; align-items:start; }
-  h2 { font-size:11px; letter-spacing:.14em; color:var(--mid); font-weight:600;
-       margin:0 0 12px; text-transform:uppercase; }
-  .rub { border-top:1px solid var(--line); margin-bottom:24px; }
-  .rub .row { border-bottom:1px solid var(--line); padding:9px 0; cursor:pointer; }
-  .rub .row.low { opacity:.4; }
-  .rub .row.high strong { font-weight:700; }
-  .badge { font-size:10.5px; letter-spacing:.06em; border:1px solid var(--line);
-           padding:1px 6px; margin-left:8px; color:var(--mid); }
-  .badge.high { border-color:var(--ink); color:var(--ink); }
-  .basis { display:none; color:var(--mid); font-size:12.5px; padding:6px 0 2px 2px; }
-  .row.open .basis { display:block; }
-  .act { color:var(--mid); font-size:12.5px; }
-  pre.doc { border:1px solid var(--line); padding:0; margin:0; overflow-x:auto;
-            font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; line-height:1.75; }
-  .ln { display:flex; padding:0 10px; border-left:3px solid transparent; }
-  .ln.bad { border-left-color:var(--red); background:#fdf6f5; cursor:pointer; }
-  .ln .n { color:#bbb; width:32px; flex:none; text-align:right; margin-right:14px; user-select:none; }
-  .fix { background:#fdf6f5; border-left:3px solid var(--red); padding:6px 10px 8px 56px;
-         font-size:12.5px; color:var(--ink); }
-  .fix b { color:var(--red); }
-  .gcard { border:1px solid var(--line); padding:14px 16px; margin-bottom:10px; }
-  .gcard h3 { margin:0 0 8px; font-size:14px; }
-  .gcard ul { margin:0; padding-left:18px; }
-  .qcard { border:1px solid var(--line); padding:14px 16px; margin-bottom:10px; }
-  .qcard.spec { opacity:.4; }
-  .qcard .q { font-size:15px; font-weight:600; margin-bottom:6px; }
-  .qcard .sm { font-size:12px; color:var(--mid); }
-  .qcard details { margin-top:8px; }
-  .qcard summary { cursor:pointer; font-size:12.5px; color:var(--mid); }
-  .miss { margin-top:8px; font-size:12.5px; }
-  .miss li { margin-bottom:2px; }
-  .miss::before { content:"● 준비 필요"; color:var(--red); font-size:11px; letter-spacing:.04em; }
-  .prep { margin-top:36px; border-top:2px solid var(--ink); padding-top:20px; }
-  .prep h2 { color:var(--ink); font-size:13px; }
-  .prep label { display:flex; gap:9px; align-items:flex-start; padding:7px 0;
-                border-bottom:1px solid var(--line); }
-  .improve { margin-top:14px; font-size:12.5px; color:var(--mid); }
-  .timeline { position:fixed; right:18px; bottom:18px; width:220px; max-height:200px; overflow:auto;
-              border:1px solid var(--line); background:var(--bg); padding:8px 10px;
-              font-family:ui-monospace,monospace; font-size:10.5px; color:var(--mid); }
-  button.cp { font:inherit; font-size:12px; padding:4px 9px; border:1px solid var(--line);
-              background:var(--bg); cursor:pointer; margin-top:8px; }
-  .empty { color:var(--mid); padding:60px 0; text-align:center; }
+  /* taste-skill redesign: Linear-clean · Korean-first · results over chrome
+     VARIANCE 5 / MOTION 3 / DENSITY 5 */
+  @font-face {
+    font-family: "Outfit";
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url("https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-wght-normal.woff2") format("woff2-variations");
+  }
+  @font-face {
+    font-family: "Noto Sans KR";
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url("https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-kr@latest/korean-wght-normal.woff2") format("woff2-variations");
+  }
+
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --ink: #18181b;
+    --muted: #71717a;
+    --faint: #a1a1aa;
+    --line: #e4e4e7;
+    --accent: #be123c; /* deep rose — redpen, not AI purple */
+    --ok: #15803d;
+    --warn: #c2410c;
+    --soft: #f4f4f5;
+    --radius: 12px;
+    --ease: cubic-bezier(.22, 1, .36, 1);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.6 "Noto Sans KR", "Outfit", system-ui, sans-serif;
+  }
+  a { color: var(--ink); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--accent); }
+  button { font: inherit; }
+
+  .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 28px 0 96px; }
+
+  /* nav */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    margin-bottom: 36px;
+  }
+  .logo {
+    display: flex; align-items: baseline; gap: 8px;
+    font-family: "Outfit", sans-serif; font-weight: 650; font-size: 20px;
+    letter-spacing: -.03em; text-decoration: none; color: var(--ink);
+  }
+  .logo em { font-style: normal; color: var(--accent); }
+  .logo small { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0; margin-left: 4px; }
+  .nav-actions { display: flex; gap: 8px; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink); text-decoration: none;
+    font-size: 13px; font-weight: 500; transition: border-color .2s var(--ease), transform .2s var(--ease);
+  }
+  .btn:hover { border-color: var(--ink); color: var(--ink); }
+  .btn-primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn-primary:hover { background: #27272a; color: #fff; }
+  .live {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted); font-weight: 500;
+  }
+  .live i {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--ok);
+    box-shadow: 0 0 0 3px rgba(21, 128, 61, .15);
+    animation: pulse 1.6s var(--ease) infinite;
+  }
+  @keyframes pulse { 50% { opacity: .4; } }
+  @media (prefers-reduced-motion: reduce) {
+    .live i, .stage.active .bar { animation: none; }
+  }
+
+  /* progress — compact, Korean */
+  .progress {
+    margin-bottom: 28px;
+  }
+  .progress-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 14px;
+  }
+  .progress-head h2 {
+    margin: 0; font-size: 13px; font-weight: 600; color: var(--muted);
+  }
+  .progress-head #pipeStatus {
+    font-size: 13px; font-weight: 600; color: var(--ink);
+  }
+  .stages {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+  }
+  .stage {
+    padding: 10px 8px; border-radius: 10px; background: var(--soft);
+    text-align: left; transition: background .25s var(--ease), color .25s var(--ease);
+  }
+  .stage .bar {
+    height: 3px; border-radius: 2px; background: var(--line); margin-bottom: 8px;
+  }
+  .stage.done .bar { background: var(--ok); }
+  .stage.active .bar {
+    background: var(--accent);
+    animation: pulse 1.4s var(--ease) infinite;
+  }
+  .stage.blocked .bar { background: var(--warn); }
+  .stage .label {
+    font-size: 12.5px; font-weight: 600; color: var(--ink); letter-spacing: -.01em;
+  }
+  .stage .hint { font-size: 11px; color: var(--faint); margin-top: 2px; }
+  .stage.done .label { color: var(--ok); }
+  .stage.active .label { color: var(--accent); }
+  .stage.blocked .label { color: var(--warn); }
+  .stage.idle .label { color: var(--muted); }
+
+  .gate-banner {
+    display: none; margin-bottom: 24px; padding: 14px 16px;
+    border-radius: var(--radius); background: #fff7ed; color: #9a3412;
+    font-size: 13.5px; line-height: 1.5;
+  }
+  .gate-banner.on { display: block; }
+  .gate-banner strong { font-weight: 650; }
+  .gate-banner code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px; background: rgba(0,0,0,.05); padding: 1px 5px; border-radius: 4px;
+  }
+
+  /* live ops — collapsed by default when results exist */
+  .live-box {
+    margin-bottom: 36px; border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--surface); overflow: hidden;
+  }
+  .live-box summary {
+    list-style: none; cursor: pointer; padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13.5px; font-weight: 600; color: var(--ink);
+    user-select: none;
+  }
+  .live-box summary::-webkit-details-marker { display: none; }
+  .live-box summary .chev { color: var(--faint); font-size: 12px; transition: transform .2s var(--ease); }
+  .live-box[open] summary .chev { transform: rotate(90deg); }
+  .live-box summary:hover { background: var(--soft); }
+  .live-inner { padding: 0 18px 18px; border-top: 1px solid var(--line); }
+  .ops {
+    display: grid; grid-template-columns: 1.2fr .8fr; gap: 20px; padding-top: 16px;
+  }
+  @media (max-width: 860px) {
+    .ops { grid-template-columns: 1fr; }
+    .stages { grid-template-columns: repeat(3, 1fr); }
+    .shell { width: min(1120px, calc(100% - 28px)); }
+  }
+  .ops h3 {
+    margin: 0 0 10px; font-size: 12px; font-weight: 600; color: var(--muted);
+  }
+  .agents { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .agent {
+    padding: 12px; border-radius: 10px; background: var(--soft);
+    transition: background .2s var(--ease);
+  }
+  .agent.running { background: #fff1f2; }
+  .agent.done { background: #f0fdf4; }
+  .agent .name { font-weight: 650; font-size: 13.5px; }
+  .agent .role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .agent .meta { margin-top: 10px; font-size: 11.5px; color: var(--faint); }
+  .agent .st {
+    float: right; font-size: 11px; font-weight: 600; color: var(--faint);
+  }
+  .agent.running .st { color: var(--accent); }
+  .agent.done .st { color: var(--ok); }
+
+  .tools { display: flex; flex-direction: column; gap: 6px; }
+  .tool {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; background: var(--soft);
+  }
+  .tool .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--line); flex: none;
+  }
+  .tool.on .dot { background: var(--accent); }
+  .tool.ok .dot { background: var(--ok); }
+  .tool .tname { font-size: 13px; font-weight: 600; }
+  .tool .tdesc { font-size: 12px; color: var(--muted); }
+  .tool .tstate { margin-left: auto; font-size: 11.5px; color: var(--faint); }
+
+  .feed {
+    margin-top: 14px; max-height: 160px; overflow: auto;
+    font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--muted); padding-top: 12px; border-top: 1px solid var(--line);
+  }
+  .feed .row { display: grid; grid-template-columns: 58px 1fr; gap: 10px; padding: 2px 0; }
+  .feed b { color: var(--ink); font-weight: 600; }
+  .tag-start { color: var(--warn); }
+  .tag-stop { color: var(--ok); }
+  .tag-tool { color: var(--muted); }
+  .tag-gate { color: var(--accent); }
+
+  .wait-hint { display: none; }
+  .wait-hint.on { display: block; margin-top: 12px; }
+  .empty-soft {
+    padding: 20px; text-align: center; color: var(--muted); font-size: 13.5px;
+  }
+
+  /* results — hero of the page */
+  .results-wrap { display: none; }
+  .results-wrap.on { display: block; animation: fade .35s var(--ease); }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .head { margin-bottom: 28px; }
+  .head h1 {
+    margin: 0 0 8px; font-family: "Outfit", "Noto Sans KR", sans-serif;
+    font-size: clamp(26px, 4vw, 36px); font-weight: 650; letter-spacing: -.035em;
+    line-height: 1.15; color: var(--ink);
+  }
+  .head h1 em { font-style: normal; color: var(--accent); }
+  .meta { color: var(--muted); font-size: 13.5px; }
+
+  .warn {
+    margin-bottom: 20px; padding: 12px 14px; border-radius: 10px;
+    background: var(--soft); color: var(--muted); font-size: 13.5px;
+  }
+
+  .cols {
+    display: grid; grid-template-columns: 1.35fr 1fr; gap: 40px; align-items: start;
+  }
+  @media (max-width: 860px) { .cols { grid-template-columns: 1fr; gap: 28px; } }
+
+  h3.sec {
+    margin: 0 0 14px; font-size: 12px; font-weight: 650; color: var(--muted);
+    letter-spacing: .02em;
+  }
+
+  .rub .row {
+    padding: 14px 0; border-bottom: 1px solid var(--line); cursor: pointer;
+    transition: background .15s var(--ease);
+  }
+  .rub .row:hover { background: rgba(0,0,0,.015); }
+  .rub .row.low { opacity: .45; }
+  .rub .row strong { font-size: 14.5px; font-weight: 650; letter-spacing: -.01em; }
+  .badge {
+    display: inline-block; margin-left: 8px; padding: 2px 7px;
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    background: var(--soft); border-radius: 999px;
+  }
+  .badge.high { color: var(--ink); background: #e4e4e7; }
+  .act { margin-top: 4px; font-size: 13px; color: var(--muted); }
+  .basis { display: none; margin-top: 8px; font-size: 12.5px; color: var(--faint); }
+  .row.open .basis { display: block; }
+
+  pre.doc {
+    margin: 0; padding: 0; background: var(--surface);
+    border: 1px solid var(--line); border-radius: var(--radius); overflow-x: auto;
+    font: 12.5px/1.75 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .ln { display: flex; padding: 0 12px; border-left: 3px solid transparent; }
+  .ln.bad { border-left-color: var(--accent); background: #fff1f2; cursor: pointer; }
+  .ln .n { width: 28px; flex: none; text-align: right; margin-right: 12px; color: var(--faint); user-select: none; }
+  .fix {
+    padding: 8px 12px 10px 46px; background: #fff1f2; font-size: 12.5px;
+    border-left: 3px solid var(--accent); font-family: "Noto Sans KR", sans-serif;
+  }
+  .fix b { color: var(--accent); }
+
+  .gcard { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .gcard h4 { margin: 0 0 8px; font-size: 15px; font-weight: 650; }
+  .gcard ul { margin: 0; padding-left: 18px; color: var(--muted); }
+
+  .qcard {
+    padding: 18px 0; border-bottom: 1px solid var(--line);
+  }
+  .qcard.spec { opacity: .42; }
+  .qcard .q { font-size: 15.5px; font-weight: 650; letter-spacing: -.015em; margin-bottom: 6px; }
+  .qcard .sm { font-size: 12.5px; color: var(--muted); }
+  .qcard details { margin-top: 10px; }
+  .qcard summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+  .miss { margin-top: 10px; font-size: 13px; }
+  .miss::before {
+    content: "준비 필요"; display: block; margin-bottom: 4px;
+    font-size: 11px; font-weight: 650; color: var(--accent); letter-spacing: .02em;
+  }
+  .miss ul { margin: 0; padding-left: 18px; color: var(--muted); }
+  .cp {
+    margin-top: 10px; padding: 6px 12px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--surface); cursor: pointer;
+    font-size: 12.5px; color: var(--ink); transition: border-color .2s var(--ease);
+  }
+  .cp:hover { border-color: var(--ink); }
+
+  .prep {
+    margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--ink);
+  }
+  .prep h3.sec {
+    font-family: "Outfit", "Noto Sans KR", sans-serif;
+    font-size: 22px; font-weight: 650; color: var(--ink);
+    letter-spacing: -.03em; margin-bottom: 16px;
+  }
+  .prep label {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 11px 0; border-bottom: 1px solid var(--line);
+    font-size: 14.5px;
+  }
+  .prep input { margin-top: 4px; accent-color: var(--accent); }
+  .improve { margin-top: 16px; font-size: 13px; color: var(--muted); }
+
+  .placeholder {
+    padding: 64px 24px; text-align: center; color: var(--muted);
+  }
+  .placeholder h2 {
+    margin: 0 0 8px; font-family: "Outfit", sans-serif;
+    font-size: 22px; font-weight: 650; color: var(--ink); letter-spacing: -.03em;
+  }
 </style>
 </head>
 <body>
-<div class="wrap" id="app"><div class="empty">불러오는 중…</div></div>
-<div class="timeline" id="tl" style="display:none"></div>
+<div class="shell">
+  <nav class="nav">
+    <a class="logo" href="./"><em>빨간</em>펜 <small>편집국</small></a>
+    <div class="nav-actions">
+      <span class="live" id="liveChip"><i></i> 실시간</span>
+      <a class="btn btn-primary" href="intake.html">문진 작성</a>
+    </div>
+  </nav>
+
+  <div class="progress">
+    <div class="progress-head">
+      <h2>진행</h2>
+      <span id="pipeStatus">문진부터 시작하세요</span>
+    </div>
+    <div class="stages" id="stages"></div>
+  </div>
+
+  <div class="gate-banner" id="gateBanner">
+    <strong>승인 필요</strong> — 체크리스트를 확인한 뒤
+    <code>state/approvals.json</code> 의 <code>rubric_approved</code> 를 true 로 바꾸면
+    위원 셋이 동시에 돌아갑니다.
+  </div>
+
+  <details class="live-box" id="liveBox">
+    <summary>
+      <span>에이전트 · MCP 진행 상황 <span id="agentSummary" style="color:var(--muted);font-weight:500"></span></span>
+      <span class="chev">›</span>
+    </summary>
+    <div class="live-inner">
+      <div class="ops">
+        <div>
+          <h3>위원</h3>
+          <div class="agents" id="agents"></div>
+          <div class="feed" id="feed"></div>
+        </div>
+        <div>
+          <h3>도구 <span id="mcpSummary" style="font-weight:500"></span></h3>
+          <div class="tools" id="tools"></div>
+          <div class="wait-hint" id="waitHint">
+            <div class="empty-soft">
+              아직 문진이 없습니다.<br>
+              <a href="intake.html"><b>문진 작성하기</b></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <div class="results-wrap" id="results"></div>
+  <div class="placeholder" id="placeholder">
+    <h2>결과가 여기에 모입니다</h2>
+    <p>문진을 작성하고 Claude Code 에서 <code>/redpen</code> 을 실행하세요.<br>
+      진행 상황은 위쪽에서, 회의 준비 목록은 아래에서 확인합니다.</p>
+  </div>
+</div>
 
 <script>
-const esc = s => String(s ?? "").replace(/[&<>]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;" }[c]));
+const esc = s => String(s ?? "").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 
-async function boot() {
-  let r;
+const AGENTS = [
+  { id: "intaker", name: "문진관", role: "체크리스트 · 신뢰등급", parallel: false },
+  { id: "marker", name: "편집관", role: "빨간줄 / 작성 가이드", parallel: true },
+  { id: "interrogator", name: "질문관", role: "예상 질문", parallel: true },
+  { id: "responder", name: "답변관", role: "답변 초안 · 준비물", parallel: true },
+];
+
+const TOOLS = [
+  { id: "weight_rubric", label: "등급 계산", desc: "weight_rubric" },
+  { id: "score_draft", label: "초안 채점", desc: "score_draft" },
+  { id: "save_rubric", label: "체크리스트 저장", desc: "게이트 대상" },
+  { id: "save_review", label: "결과 저장", desc: "save_review" },
+];
+
+const STAGES = [
+  { id: "intake", label: "문진", hint: "답변 작성" },
+  { id: "mcp", label: "계산", hint: "등급" },
+  { id: "intaker", label: "문진관", hint: "체크리스트" },
+  { id: "gate", label: "승인", hint: "사람 확인" },
+  { id: "parallel", label: "위원 3인", hint: "동시" },
+  { id: "done", label: "결과", hint: "준비 목록" },
+];
+
+let lastSig = "";
+
+function normEv(x) {
+  const ev = String(x.ev || x.event || "").toLowerCase();
+  if (ev.includes("start")) return "start";
+  if (ev.includes("stop")) return "stop";
+  if (ev === "tool_done" || ev === "tooldone") return "tool_done";
+  if (ev === "tool") return "tool";
+  if (ev === "gate") return "gate";
+  if (ev === "halt") return "halt";
+  return ev || "event";
+}
+
+function shortTool(t) {
+  if (!t) return "";
+  const m = String(t).match(/redpen-desk__([a-z_]+)/i) || String(t).match(/([a-z_]+)$/i);
+  return (m && m[1]) || t;
+}
+
+function agentState(trace, id) {
+  let started = null, stopped = null;
+  for (const x of trace) {
+    if ((x.agent || "").toLowerCase() !== id) continue;
+    const ev = normEv(x);
+    if (ev === "start") started = x.ts;
+    if (ev === "stop") stopped = x.ts;
+  }
+  if (started && !stopped) return { status: "running", started, stopped };
+  if (started && stopped) return { status: "done", started, stopped };
+  return { status: "idle", started, stopped };
+}
+
+function dur(a, b) {
+  if (!a || !b) return null;
+  const ms = Date.parse(b) - Date.parse(a);
+  if (!Number.isFinite(ms) || ms < 0) return null;
+  return (ms / 1000).toFixed(1) + "초";
+}
+
+function toolStates(trace) {
+  const map = {};
+  TOOLS.forEach(t => { map[t.id] = "idle"; });
+  for (const x of trace) {
+    const name = shortTool(x.tool);
+    if (!name || !(name in map)) continue;
+    const ev = normEv(x);
+    if (ev === "tool") map[name] = "on";
+    if (ev === "tool_done") map[name] = "ok";
+  }
+  return map;
+}
+
+async function fetchText(url) {
   try {
-    r = await (await fetch("../state/review.json?" + Date.now())).json();
-  } catch {
-    document.getElementById("app").innerHTML =
-      '<div class="empty">아직 결과가 없습니다.<br><br>' +
-      'Claude Code 에서 <code>/redpen</code> 을 실행하세요.</div>';
+    const r = await fetch(url + (url.includes("?") ? "&" : "?") + "t=" + Date.now());
+    if (!r.ok) return null;
+    return await r.text();
+  } catch { return null; }
+}
+
+async function fetchJSON(url) {
+  const t = await fetchText(url);
+  if (t == null) return null;
+  try { return JSON.parse(t); } catch { return null; }
+}
+
+function parseTrace(text) {
+  if (!text || !text.trim()) return [];
+  return text.trim().split("\n").map(l => {
+    try { return JSON.parse(l); } catch { return null; }
+  }).filter(Boolean);
+}
+
+function derivePipeline(intake, approvals, review, rubricsHint, trace, tools) {
+  const hasIntake = !!(intake && intake.reviewer && intake.doc_purpose);
+  const approved = !!(approvals && approvals.rubric_approved === true);
+  const hasReview = !!review;
+  const hasRubric = !!rubricsHint;
+  const intaker = agentState(trace, "intaker");
+  const trio = ["marker", "interrogator", "responder"].map(id => agentState(trace, id));
+  const anyTrioRun = trio.some(s => s.status === "running");
+  const allTrioDone = trio.every(s => s.status === "done");
+  const anyTrioDone = trio.some(s => s.status === "done");
+  const gateBlocked = trace.some(x => normEv(x) === "gate" && (x.tool === "blocked" || x.status === "blocked"));
+  const mcpTouched = tools.weight_rubric !== "idle" || tools.score_draft !== "idle" || tools.save_rubric !== "idle";
+
+  const st = {
+    intake: hasIntake ? "done" : "active",
+    mcp: !hasIntake ? "idle" : (mcpTouched || hasRubric || hasReview ? "done" : (intaker.status !== "idle" ? "done" : "active")),
+    intaker: !hasIntake ? "idle" : (hasRubric || hasReview || intaker.status === "done" ? "done" : (intaker.status === "running" ? "active" : (approved || hasRubric ? "done" : "active"))),
+    gate: !hasIntake ? "idle" : (!hasRubric && !approved && intaker.status !== "idle" ? "blocked" : (approved || hasReview ? "done" : (hasRubric ? "done" : (gateBlocked ? "blocked" : "idle")))),
+    parallel: !approved && !hasReview && !anyTrioRun && !anyTrioDone ? "idle" : (allTrioDone || hasReview ? "done" : (anyTrioRun ? "active" : (anyTrioDone ? "active" : "idle"))),
+    done: hasReview ? "done" : "idle",
+  };
+
+  if (hasIntake && !approved && !hasReview && (intaker.status === "done" || tools.weight_rubric !== "idle") && !hasRubric) {
+    st.gate = "blocked";
+    st.intaker = st.intaker === "idle" ? "done" : st.intaker;
+    st.mcp = "done";
+  }
+  if (hasIntake && approved && !hasReview && !anyTrioRun && !anyTrioDone) {
+    st.gate = "done";
+    st.parallel = "active";
+  }
+
+  let focus = "intake";
+  for (const id of ["done", "parallel", "gate", "intaker", "mcp", "intake"]) {
+    if (st[id] === "active" || st[id] === "blocked") { focus = id; break; }
+  }
+  if (hasReview) focus = "done";
+
+  return { st, focus, hasIntake, approved, hasReview };
+}
+
+function renderStages(st) {
+  document.getElementById("stages").innerHTML = STAGES.map(s => {
+    const status = st[s.id] || "idle";
+    return `<div class="stage ${status}">
+      <div class="bar"></div>
+      <div class="label">${esc(s.label)}</div>
+      <div class="hint">${esc(s.hint)}</div>
+    </div>`;
+  }).join("");
+}
+
+function renderAgents(trace) {
+  document.getElementById("agents").innerHTML = AGENTS.map(a => {
+    const s = agentState(trace, a.id);
+    const cls = s.status === "running" ? "running" : (s.status === "done" ? "done" : "");
+    const label = s.status === "running" ? "진행" : (s.status === "done" ? "완료" : "대기");
+    const d = s.status === "done" ? dur(s.started, s.stopped) : (s.status === "running" ? "작업 중" : "—");
+    return `<div class="agent ${cls}">
+      <span class="st">${label}</span>
+      <div class="name">${esc(a.name)}</div>
+      <div class="role">${esc(a.role)}${a.parallel ? " · 동시" : ""}</div>
+      <div class="meta">${esc(d)}</div>
+    </div>`;
+  }).join("");
+
+  const run = AGENTS.filter(a => agentState(trace, a.id).status === "running").length;
+  const done = AGENTS.filter(a => agentState(trace, a.id).status === "done").length;
+  document.getElementById("agentSummary").textContent =
+    run || done ? `· ${run}명 진행 · ${done}명 완료` : "";
+}
+
+function renderTools(tools) {
+  document.getElementById("tools").innerHTML = TOOLS.map(t => {
+    const s = tools[t.id] || "idle";
+    const cls = s === "on" ? "on" : (s === "ok" ? "ok" : "");
+    const label = s === "on" ? "호출 중" : (s === "ok" ? "완료" : "대기");
+    return `<div class="tool ${cls}">
+      <div class="dot"></div>
+      <div><div class="tname">${esc(t.label)}</div><div class="tdesc">${esc(t.desc)}</div></div>
+      <div class="tstate">${label}</div>
+    </div>`;
+  }).join("");
+  const hit = TOOLS.filter(t => tools[t.id] !== "idle").length;
+  document.getElementById("mcpSummary").textContent = hit ? `${hit}/4` : "";
+}
+
+function renderFeed(trace) {
+  const rows = trace.slice(-16).reverse();
+  if (!rows.length) {
+    document.getElementById("feed").innerHTML =
+      `<div class="row"><span></span><span>/redpen 실행 시 이벤트가 표시됩니다</span></div>`;
     return;
   }
+  document.getElementById("feed").innerHTML = rows.map(x => {
+    const ev = normEv(x);
+    const time = (x.ts || "").slice(11, 19);
+    const agent = x.agent ? ` <b>${esc(x.agent)}</b>` : "";
+    const tool = x.tool ? ` ${esc(shortTool(x.tool))}` : "";
+    const tag = `tag-${ev === "tool_done" ? "tool" : ev}`;
+    return `<div class="row"><span>${esc(time)}</span><span><span class="${tag}">${esc(ev)}</span>${agent}${tool}</span></div>`;
+  }).join("");
+}
 
-  let doc = [];
-  if (r.mode === "review" && r.draft_path) {
-    try { doc = (await (await fetch("../" + r.draft_path)).text()).split("\n"); } catch {}
+function renderResults(r, docLines) {
+  const wrap = document.getElementById("results");
+  const ph = document.getElementById("placeholder");
+  if (!r) {
+    wrap.className = "results-wrap";
+    wrap.innerHTML = "";
+    ph.style.display = "block";
+    return;
   }
-
+  ph.style.display = "none";
+  wrap.className = "results-wrap on";
   const ev = r.evidence || {};
   const specOK = (r.questions || []).filter(q => !q.speculative).length;
   const marks = r.marks || [];
@@ -100,21 +611,21 @@ async function boot() {
     </div>`).join("");
 
   const leftHTML = r.mode === "review"
-    ? `<h2>초안 · 지적 ${marks.length}건</h2><pre class="doc">${
-        doc.map((l, i) => {
+    ? `<h3 class="sec">초안 · 지적 ${marks.length}건</h3><pre class="doc">${
+        (docLines || []).map((l, i) => {
           const n = i + 1, ms = badLines[n];
           const line = `<div class="ln ${ms ? "bad" : ""}" ${ms ? `onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"` : ""}><span class="n">${n}</span><span>${esc(l) || "&nbsp;"}</span></div>`;
           return ms ? line + `<div class="fix" style="display:none">${ms.map(m =>
             `<b>${esc(m.rubric_id)}</b> ${esc(m.issue)}<br>→ ${esc(m.fix)}`).join("<br><br>")}</div>` : line;
         }).join("")
       }</pre>`
-    : `<h2>작성 가이드 · ${(r.guide || []).length}개 섹션</h2>${
-        (r.guide || []).map(g => `<div class="gcard"><h3>${esc(g.section)}
-          <span class="badge">${(g.rubric_id || []).join(" ")}</span></h3>
+    : `<h3 class="sec">작성 가이드 · ${(r.guide || []).length}개 섹션</h3>${
+        (r.guide || []).map(g => `<div class="gcard"><h4>${esc(g.section)}
+          <span class="badge">${(g.rubric_id || []).join(" ")}</span></h4>
           <ul>${(g.must_include || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")
       }`;
 
-  const qHTML = (r.questions || []).map((q, i) => `
+  const qHTML = (r.questions || []).map(q => `
     <div class="qcard ${q.speculative ? "spec" : ""}">
       <div class="q">${esc(q.q)}</div>
       <div class="sm">${q.speculative ? "근거 없음" : "근거 " + (q.basis || []).join(", ")}
@@ -122,7 +633,7 @@ async function boot() {
         <span class="badge ${q.confidence}">${q.confidence}</span></div>
       <details><summary>답변 초안 보기</summary><div>${esc(q.answer)}</div></details>
       ${(q.missing || []).length ? `<div class="miss"><ul>${
-        q.missing.map(m => `<li>${esc(m)}</li>`).join("")}</ul>준비 ${esc(q.prep_minutes)}분</div>` : ""}
+        q.missing.map(m => `<li>${esc(m)}</li>`).join("")}</ul>약 ${esc(q.prep_minutes)}분</div>` : ""}
       <button class="cp" onclick='navigator.clipboard.writeText(${JSON.stringify(
         `[질문] ${q.q}\n[답변] ${q.answer}\n[준비물] ${(q.missing || []).join(", ") || "없음"}`
       )});this.textContent="복사됨"'>복사</button>
@@ -130,43 +641,101 @@ async function boot() {
 
   const allMissing = (r.questions || []).flatMap(q => q.missing || []);
 
-  document.getElementById("app").innerHTML = `
+  wrap.innerHTML = `
     <div class="head">
-      <h1>예상 지적 ${marks.length}건 · 근거 있는 질문 ${specOK}건 ·
-        준비 시간 <em>${r.total_prep_minutes}분</em></h1>
-      <div class="meta">리뷰어 ${esc(r.reviewer)} · 문진 12문항 중 ${ev.answered}개 답변 ·
-        확실한 항목 ${ev.high_count}개 · ${r.mode === "review" ? "검수 모드" : "가이드 모드"}</div>
+      <h1>지적 ${marks.length} · 질문 ${specOK} · 준비 <em>${r.total_prep_minutes}분</em></h1>
+      <div class="meta">${esc(r.reviewer)} · 문진 ${ev.answered ?? "—"}/12 ·
+        확실한 항목 ${ev.high_count ?? 0} · ${r.mode === "review" ? "검수" : "가이드"}</div>
     </div>
-    ${ev.high_count === 0 ? '<div class="warn">확실한 근거가 없습니다. 아래 결과를 참고 수준으로 보세요.</div>' : ""}
-    ${(r.halts || []).length ? `<div class="warn">중단: ${r.halts.map(esc).join(" · ")}</div>` : ""}
+    ${ev.high_count === 0 ? '<div class="warn">확실한 근거가 없습니다. 참고 수준으로 보세요.</div>' : ""}
+    ${(r.halts || []).length ? `<div class="warn">${r.halts.map(esc).join(" · ")}</div>` : ""}
     <div class="cols">
       <div>${leftHTML}</div>
       <div>
-        <h2>체크리스트</h2><div class="rub">${rubHTML}</div>
-        <h2>예상 질문 ${(r.questions || []).length}건</h2>${qHTML}
+        <h3 class="sec">체크리스트</h3><div class="rub">${rubHTML}</div>
+        <h3 class="sec">예상 질문 ${(r.questions || []).length}</h3>${qHTML}
       </div>
     </div>
     <div class="prep">
-      <h2>회의 전 준비 목록</h2>
+      <h3 class="sec">회의 전 준비</h3>
       ${allMissing.length
         ? allMissing.map(m => `<label><input type="checkbox"><span>${esc(m)}</span></label>`).join("")
         : '<div class="meta">준비할 항목이 없습니다.</div>'}
       ${(ev.improve_by || []).length
-        ? `<div class="improve">정확도를 올리려면: 문항 ${ev.improve_by.join(", ")}에 답해 보세요.</div>` : ""}
+        ? `<div class="improve">정확도를 올리려면 문항 ${ev.improve_by.join(", ")}에 답해 보세요.</div>` : ""}
     </div>`;
-
-  try {
-    const t = await (await fetch("../logs/trace.jsonl?" + Date.now())).text();
-    const rows = t.trim().split("\n").filter(Boolean).slice(-14).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-    if (rows.length) {
-      document.getElementById("tl").style.display = "block";
-      document.getElementById("tl").innerHTML = rows.map(x =>
-        `${(x.ts || "").slice(11, 19)} ${esc(x.agent || x.ev)} ${esc(x.ev)}`).join("<br>");
-    }
-  } catch {}
 }
-boot();
-setInterval(boot, 2000);
+
+async function tick() {
+  const [intake, approvals, review, traceText, rubricIndex] = await Promise.all([
+    fetchJSON("../state/intake.json"),
+    fetchJSON("../state/approvals.json"),
+    fetchJSON("../state/review.json"),
+    fetchText("../logs/trace.jsonl"),
+    fetchText("../state/rubrics/"),
+  ]);
+
+  let hasRubric = false;
+  if (intake && intake.reviewer) {
+    const rub = await fetchText(`../state/rubrics/${encodeURIComponent(intake.reviewer)}.md`);
+    hasRubric = rub != null && rub.length > 0;
+  }
+  if (!hasRubric && rubricIndex && rubricIndex.includes(".md")) hasRubric = true;
+
+  const trace = parseTrace(traceText || "");
+  let tools = toolStates(trace);
+  if (hasRubric) tools.save_rubric = tools.save_rubric === "idle" ? "ok" : tools.save_rubric;
+  if (review) tools.save_review = "ok";
+  if (intake && (hasRubric || review)) tools.weight_rubric = tools.weight_rubric === "idle" ? "ok" : tools.weight_rubric;
+  if (review && review.mode === "review") tools.score_draft = tools.score_draft === "idle" ? "ok" : tools.score_draft;
+
+  const pipe = derivePipeline(intake, approvals, review, hasRubric, trace, tools);
+  const sig = JSON.stringify({
+    pipe: pipe.st, tools, review: !!review,
+    agents: AGENTS.map(a => agentState(trace, a.id).status),
+    feed: (traceText || "").length,
+    prep: review && review.total_prep_minutes,
+  });
+
+  if (sig !== lastSig) {
+    lastSig = sig;
+    renderStages(pipe.st);
+    renderAgents(trace);
+    renderTools(tools);
+    renderFeed(trace);
+
+    document.getElementById("gateBanner").className =
+      "gate-banner" + (pipe.st.gate === "blocked" && !pipe.hasReview ? " on" : "");
+    document.getElementById("waitHint").className =
+      "wait-hint" + (!pipe.hasIntake ? " on" : "");
+
+    const labels = {
+      intake: "문진을 작성하세요",
+      mcp: "등급을 계산하는 중",
+      intaker: "문진관이 체크리스트를 만드는 중",
+      gate: "승인을 기다리는 중",
+      parallel: "위원 셋이 동시에 일하는 중",
+      done: "결과가 준비됐습니다"
+    };
+    document.getElementById("pipeStatus").textContent = labels[pipe.focus] || "대기";
+
+    // Auto-open live box while work is in progress; collapse when done
+    const box = document.getElementById("liveBox");
+    const busy = ["mcp", "intaker", "gate", "parallel"].includes(pipe.focus);
+    if (busy && !pipe.hasReview) box.open = true;
+    else if (pipe.hasReview) box.open = false;
+
+    let docLines = [];
+    if (review && review.mode === "review" && review.draft_path) {
+      const doc = await fetchText("../" + review.draft_path);
+      if (doc != null) docLines = doc.split("\n");
+    }
+    renderResults(review, docLines);
+  }
+}
+
+tick();
+setInterval(tick, 1200);
 </script>
 </body>
 </html>

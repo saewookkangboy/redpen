@@ -13,15 +13,28 @@ git rev-parse --git-dir >/dev/null 2>&1 || { echo "git 리포가 아닙니다. g
 
 BASE=$(git rev-parse --abbrev-ref HEAD)
 
-# 각 단계에서 아직 없어야 할 파일들 (그 장에서 만드는 것)
-drop_0="web/intake.html web/index.html CLAUDE.md schemas/review.schema.json mcp_server/server.py .mcp.json .claude/agents .claude/gate.sh .claude/settings.json"
-drop_1="web/index.html CLAUDE.md schemas/review.schema.json mcp_server/server.py .mcp.json .claude/agents .claude/gate.sh .claude/settings.json"
-drop_2="web/index.html mcp_server/server.py .mcp.json .claude/agents .claude/gate.sh .claude/settings.json"
-drop_3="web/index.html .claude/agents .claude/gate.sh .claude/settings.json"
-drop_4="web/index.html .claude/agents/marker.md .claude/agents/interrogator.md .claude/agents/responder.md .claude/gate.sh .claude/settings.json"
-drop_5="web/index.html .claude/agents/marker.md .claude/agents/interrogator.md .claude/agents/responder.md"
-drop_6="web/index.html"
-drop_7=""
+# 각 단계에서 아직 없어야 할 파일들.
+# step-N 은 "N장을 시작하는 상태" = N-1장까지 완료된 상태다.
+#   1장 산출물 web/intake.html          2장 CLAUDE.md, schemas/
+#   3장 mcp_server/server.py, .mcp.json 4장 agents/intaker.md
+#   5장 gate.sh, settings.json          6장 agents/{marker,interrogator,responder}.md
+#   7장 web/index.html
+ALL7="web/index.html"
+ALL6="$ALL7 .claude/agents/marker.md .claude/agents/interrogator.md .claude/agents/responder.md"
+ALL5="$ALL6 .claude/gate.sh .claude/settings.json"
+ALL4="$ALL5 .claude/agents/intaker.md"
+ALL3="$ALL4 mcp_server/server.py .mcp.json"
+ALL2="$ALL3 CLAUDE.md schemas/review.schema.json"
+ALL1="$ALL2 web/intake.html"
+
+drop_0="$ALL1"
+drop_1="$ALL1"
+drop_2="$ALL2"
+drop_3="$ALL3"
+drop_4="$ALL4"
+drop_5="$ALL5"
+drop_6="$ALL6"
+drop_7="$ALL7"
 
 for n in 0 1 2 3 4 5 6 7; do
   var="drop_$n"; files="${!var}"

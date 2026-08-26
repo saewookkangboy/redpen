@@ -35,6 +35,9 @@ cd redpen
 ./scripts/check.sh 0      # 환경 점검
 ```
 
+이 리포에는 강사가 유지보수하는 **완성본**이 그대로 들어 있습니다.
+직접 만드는 실습이 되려면 0장이 끝나는 상태로 되돌려야 합니다 — [docs/00-start.md](docs/00-start.md) 2절에서 `./scripts/reset.sh step-0` 로 합니다.
+
 문제가 있으면 [SETUP.md](SETUP.md) 를 보세요. 그다음 [docs/00-start.md](docs/00-start.md) 부터 순서대로 진행합니다.
 
 **막히면 언제든 다음 단계 완성본을 받을 수 있습니다.**

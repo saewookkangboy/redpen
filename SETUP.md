@@ -9,7 +9,7 @@
 | Claude Code | 이 실습의 본체 | `claude --version` |
 | Python 3.10+ | MCP 서버가 파이썬 | `python3 --version` |
 | uv | MCP 서버 실행 시 의존성 자동 처리 | `uv --version` |
-| jq | 관측 훅이 로그를 남길 때 | `jq --version` |
+| jq | 5장 게이트가 승인 여부를 읽을 때 | `jq --version` |
 
 ## macOS
 

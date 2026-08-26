@@ -89,7 +89,7 @@ git push origin main
 | 4장 | 전 항목이 low | 문항3 빈도를 전부 "1회" 로 답한 경우. 그대로 두고 8장에서 다룸 |
 | 5장 | 게이트가 안 걸린다 | `chmod +x .claude/gate.sh` |
 | 5장 | AI 가 스스로 approvals 를 true 로 바꿈 | CLAUDE.md 의 "게이트 승인을 스스로 true 로 바꾸지 않는다" 확인 |
-| 6장 | `trace.jsonl` 이 빈다 | `jq` 미설치. 훅 명령을 `echo` 로 임시 대체하고 넘어감 |
+| 6장 | `trace.jsonl` 이 빈다 | `python3` 미설치 또는 `scripts/trace-log.sh` 실행 권한 없음. `chmod +x scripts/trace-log.sh` |
 | 6장 | 답변관이 없는 숫자를 넣음 | `tools:` 에 검색이 붙었는지 확인 |
 | 7장 | 빈 화면 | `file://` 로 열었음. `./scripts/serve.sh` |
 | 전체 | 한 명이 크게 밀림 | `./scripts/reset.sh step-N`. **이유는 나중에 설명한다고 못 박고 시작하세요** |

@@ -108,7 +108,7 @@ HOTL 입니다. 멈추는 조건을 미리 다 적어놔야 하기 때문입니�
 | 규칙 | `CLAUDE.md` |
 | 계약 | `schemas/review.schema.json` |
 | 역할 | `.claude/agents/` 4개 |
-| 관측 | `.claude/settings.json` → `logs/trace.jsonl` |
+| 관측 | `.claude/settings.json` → `scripts/trace-log.sh` → `logs/trace.jsonl` |
 | 게이트 | `state/approvals.json` + `.claude/gate.sh` |
 | 기억 | `state/rubrics/` |
 

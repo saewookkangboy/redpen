@@ -3,7 +3,7 @@
 #   ./scripts/check.sh        전체
 #   ./scripts/check.sh 3      3장만
 #
-# jq 에 의존하지 않는다. jq 는 관측 훅에서만 쓰므로,
+# jq 에 의존하지 않는다. jq 는 게이트(gate.sh)에서만 쓰므로,
 # 아직 설치 전인 수강생에게 오탐이 뜨면 안 된다.
 cd "$(dirname "$0")/.." || exit 1
 
@@ -55,7 +55,7 @@ if run 0; then
 sec "0장 · 환경"
   command -v python3 >/dev/null && ok "python3" || no "python3 없음" "SETUP.md 참고"
   command -v uv      >/dev/null && ok "uv"      || no "uv 없음" "curl -LsSf https://astral.sh/uv/install.sh | sh"
-  command -v jq      >/dev/null && ok "jq"      || no "jq 없음" "관측 훅에 필요합니다. brew install jq"
+  command -v jq      >/dev/null && ok "jq"      || no "jq 없음" "5장 게이트가 승인 여부를 읽을 때 씁니다. brew install jq"
   has drafts/sample-report.md && ok "가상 초안" || no "drafts/sample-report.md 없음"
 fi
 
@@ -144,7 +144,7 @@ sec "6장 · 위원 3인 병렬"
     || no "답변관 도구 권한 확인" "검색이 붙으면 missing 이 비어버립니다"
   if has logs/trace.jsonl && [ -s logs/trace.jsonl ]; then
     ok "trace.jsonl 기록 있음 ($(wc -l < logs/trace.jsonl | tr -d ' ')줄)"
-  else no "trace.jsonl 이 비었다" "jq 설치와 훅 설정을 확인하세요"; fi
+  else no "trace.jsonl 이 비었다" "python3 와 훅 설정(scripts/trace-log.sh)을 확인하세요"; fi
 fi
 
 # ── 7장 · 결과 화면 ───────────────────────────────────────
@@ -160,6 +160,23 @@ sec "7장 · 결과 화면"
     if [ "${hi:-0}" -gt 0 ] 2>/dev/null; then ok "high 등급 항목 ${hi}개"
     else no "high 등급 0개" "정상일 수 있습니다. improve_by 문항에 답해보세요"; fi
   else no "state/review.json 없음" "/redpen 을 끝까지 실행하세요"; fi
+fi
+
+# ── 8장 · HOTL 전환 ───────────────────────────────────────
+if run 8; then
+sec "8장 · HOTL 전환과 검증 루프"
+  jis state/approvals.json mode HOTL \
+    && ok "approvals.json mode = HOTL" \
+    || no "mode 가 HOTL 이 아님" "state/approvals.json 을 HOTL 로 바꾸세요"
+  jis state/approvals.json rubric_approved true \
+    && ok "승인 상태 true (무인 진행)" \
+    || no "rubric_approved 가 true 가 아님" "HOTL 은 승인 없이 진행하므로 true 로 둡니다"
+  grep -q "HOTL 모드" CLAUDE.md 2>/dev/null \
+    && ok "CLAUDE.md 에 HOTL 절 있음" \
+    || no "HOTL 절 없음" "docs/08-hotl.md 의 멈출 조건을 CLAUDE.md 에 붙이세요"
+  grep -q "halts" CLAUDE.md 2>/dev/null \
+    && ok "halts 기록 규칙 명시" \
+    || no "halts 언급 없음" "멈출 때 halts 배열에 사유를 적도록 규칙에 넣으세요"
 fi
 
 printf '\n\033[1m통과 %d · 실패 %d\033[0m\n' "$PASS" "$FAIL"

@@ -15,6 +15,12 @@ BASE=$(git rev-parse --abbrev-ref HEAD)
 
 # 각 단계에서 아직 없어야 할 파일들.
 # step-N 은 "N장을 시작하는 상태" = N-1장까지 완료된 상태다.
+#
+# 한계: 이 스크립트는 파일 단위로만 자르므로, 한 파일이 여러 장에 걸쳐
+# 점진적으로 채워지는 경우(mcp_server/server.py 는 3장에서 읽기 도구,
+# 5장에서 쓰기 도구가 추가됨) step-4/step-5 태그에는 완성본(main)의
+# 쓰기 도구까지 이미 들어있다. reset.sh 는 "막혔을 때 받는 완성본"이므로
+# 문제는 아니지만, 실습 스포일러가 될 수 있음을 강사는 알아두어야 한다.
 #   1장 산출물 web/intake.html          2장 CLAUDE.md, schemas/
 #   3장 mcp_server/server.py, .mcp.json 4장 agents/intaker.md
 #   5장 gate.sh, settings.json          6장 agents/{marker,interrogator,responder}.md

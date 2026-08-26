@@ -64,7 +64,7 @@ chmod +x .claude/gate.sh
 echo '{ "rubric_approved": false, "mode": "HITL" }' > state/approvals.json
 ```
 
-관측은 `scripts/trace-log.sh` 가 훅 stdin 을 정규화해 `logs/trace.jsonl` 에 씁니다.
+관측은 이 리포에 이미 들어있는 `scripts/trace-log.sh` 가 맡습니다. 훅 stdin 을 정규화해 `logs/trace.jsonl` 에 씁니다 — 직접 만들 필요는 없습니다.
 `.claude/settings.json` 을 만듭니다.
 
 ```json

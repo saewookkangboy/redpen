@@ -37,7 +37,21 @@ rm state/review.json logs/trace.jsonl
 
 ---
 
-## 2. 환경 점검 (5분)
+## 2. 시작 상태로 맞추기 (1분)
+
+지금 클론한 리포에는 이 실습의 **완성본**이 이미 들어 있습니다. 강사가 유지보수하는 답안입니다.
+직접 만드는 경험이 되려면 0장이 끝나는 상태로 되돌려야 합니다.
+
+```bash
+./scripts/reset.sh step-0
+```
+
+`web/intake.html`, `CLAUDE.md`, `mcp_server/server.py`, 서브에이전트, 결과 화면이 전부 사라집니다.
+정상입니다. 1장부터 이걸 하나씩 다시 만드는 게 이 수업입니다.
+
+---
+
+## 3. 환경 점검 (5분)
 
 ```bash
 ./scripts/check.sh 0
@@ -47,7 +61,7 @@ rm state/review.json logs/trace.jsonl
 
 ---
 
-## 3. 먼저 정하고 갑니다 (5분)
+## 4. 먼저 정하고 갑니다 (5분)
 
 이 시스템은 **사람을 학습하지 않습니다.**
 

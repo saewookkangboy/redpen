@@ -122,6 +122,12 @@ sec "5장 · 게이트와 관측"
   else no ".claude/gate.sh 없음"; fi
   jpath .claude/settings.json hooks.PreToolUse    && ok "PreToolUse 훅 등록" || no "게이트 훅 등록 안 됨"
   jpath .claude/settings.json hooks.SubagentStart && ok "관측 훅 등록"       || no "SubagentStart 훅 없음"
+  if has scripts/trace-log.sh && [ -x scripts/trace-log.sh ]; then
+    ok "trace-log.sh 존재"
+  else no "scripts/trace-log.sh 없음" "관측 훅이 정규화 스크립트를 부릅니다"; fi
+  grep -q "trace-log.sh" .claude/settings.json 2>/dev/null \
+    && ok "관측 훅이 trace-log.sh 를 사용" \
+    || no "settings.json 에 trace-log.sh 없음" "jq 직결보다 정규화 스크립트를 쓰세요"
   for t in save_rubric save_review; do
     grep -q "def $t" mcp_server/server.py 2>/dev/null && ok "도구 $t" || no "도구 $t 없음"
   done

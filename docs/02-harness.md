@@ -17,8 +17,8 @@
 | 규칙 | `CLAUDE.md` | 편집국 규정 | 2장 |
 | 계약 | `schemas/*.json` | 제출 서식 | 2장 |
 | 역할 | `.claude/agents/*.md` | 직무기술서 | 4·6장 |
-| 관측 | `logs/trace.jsonl` | 회의록 | 5장 |
-| 게이트 | `state/approvals.json` | 결재란 | 5장 |
+| 관측 | `.claude/settings.json` → `scripts/trace-log.sh` → `logs/trace.jsonl` | 회의록 | 5장 |
+| 게이트 | `state/approvals.json` + `.claude/gate.sh` | 결재란 | 5장 |
 | 기억 | `state/rubrics/*.md` | 인수인계 파일 | 4장 |
 
 ---

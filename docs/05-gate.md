@@ -37,10 +37,22 @@ mcp_server/server.py 에 쓰기 도구 2개를 추가해줘. 읽기 도구는 �
 ```bash
 cat > .claude/gate.sh <<'EOF'
 #!/usr/bin/env bash
+# HITL 게이트 — 승인 없이는 체크리스트를 저장할 수 없다.
+# exit 2 가 PreToolUse 훅에서 도구 호출 자체를 차단한다.
+cd "$(dirname "$0")/.." || exit 2
+
+log_gate() {
+  local status="$1"
+  bash scripts/trace-log.sh gate "$status" </dev/null 2>/dev/null || true
+}
+
 APPROVED=$(jq -r '.rubric_approved // false' state/approvals.json 2>/dev/null)
 if [ "$APPROVED" = "true" ]; then
+  log_gate "pass"
   exit 0
 fi
+
+log_gate "blocked"
 cat >&2 <<'MSG'
 [게이트] 체크리스트는 사람이 확인해야 저장됩니다.
 항목별 근거 문항과 신뢰등급을 직접 읽어보고,
@@ -52,6 +64,7 @@ chmod +x .claude/gate.sh
 echo '{ "rubric_approved": false, "mode": "HITL" }' > state/approvals.json
 ```
 
+관측은 `scripts/trace-log.sh` 가 훅 stdin 을 정규화해 `logs/trace.jsonl` 에 씁니다.
 `.claude/settings.json` 을 만듭니다.
 
 ```json
@@ -59,15 +72,23 @@ echo '{ "rubric_approved": false, "mode": "HITL" }' > state/approvals.json
   "hooks": {
     "SubagentStart": [
       { "hooks": [ { "type": "command", "async": true,
-        "command": "jq -c '{ts: now|todate, ev: \"start\", agent: .agent_type}' >> logs/trace.jsonl" } ] }
+        "command": "bash scripts/trace-log.sh start || true" } ] }
     ],
     "SubagentStop": [
       { "hooks": [ { "type": "command", "async": true,
-        "command": "jq -c '{ts: now|todate, ev: \"stop\", agent: .agent_type}' >> logs/trace.jsonl" } ] }
+        "command": "bash scripts/trace-log.sh stop || true" } ] }
     ],
     "PreToolUse": [
       { "matcher": "mcp__redpen-desk__save_rubric",
-        "hooks": [ { "type": "command", "command": "bash .claude/gate.sh" } ] }
+        "hooks": [ { "type": "command", "command": "bash .claude/gate.sh" } ] },
+      { "matcher": "mcp__redpen-desk__.*",
+        "hooks": [ { "type": "command", "async": true,
+          "command": "bash scripts/trace-log.sh tool || true" } ] }
+    ],
+    "PostToolUse": [
+      { "matcher": "mcp__redpen-desk__.*",
+        "hooks": [ { "type": "command", "async": true,
+          "command": "bash scripts/trace-log.sh tool_done || true" } ] }
     ]
   }
 }

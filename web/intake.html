@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>빨간펜 — 문진</title>
+<style>
+  :root { --ink:#111; --mid:#666; --line:#ddd; --bg:#fff; --accent:#c0392b; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;
+         font-size:15px; line-height:1.65; }
+  .wrap { max-width:720px; margin:0 auto; padding:48px 24px 120px; }
+  h1 { font-size:22px; font-weight:600; margin:0 0 4px; letter-spacing:-.01em; }
+  .sub { color:var(--mid); font-size:13px; margin:0 0 32px; }
+  .bar { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line);
+         padding:12px 0; margin-bottom:32px; font-size:13px; color:var(--mid);
+         display:flex; justify-content:space-between; z-index:10; }
+  .bar b { color:var(--ink); font-weight:600; }
+  section { border-top:1px solid var(--line); padding:28px 0 4px; }
+  .sec-label { font-size:11px; letter-spacing:.14em; color:var(--mid); margin-bottom:20px; }
+  .q { margin-bottom:26px; }
+  .q > label { display:block; font-weight:600; margin-bottom:8px; }
+  .num { color:var(--mid); font-weight:400; margin-right:6px; }
+  .req { color:var(--accent); font-size:11px; margin-left:6px; }
+  .hint { color:var(--mid); font-size:12.5px; margin:-4px 0 8px; }
+  input[type=text], textarea, select {
+    width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:0;
+    font:inherit; background:var(--bg); color:var(--ink); }
+  textarea { resize:vertical; min-height:70px; }
+  input:focus, textarea:focus, select:focus { outline:none; border-color:var(--ink); }
+  .radios { display:flex; flex-wrap:wrap; gap:14px; }
+  .radios label, .catalog label { font-weight:400; display:flex; align-items:center; gap:6px; cursor:pointer; }
+  .catalog { display:grid; grid-template-columns:1fr 1fr; gap:2px 18px; }
+  .item { border-bottom:1px solid transparent; padding:5px 0; }
+  .item.on { border-bottom-color:var(--line); }
+  .freq { display:none; margin:4px 0 8px 24px; }
+  .item.on .freq { display:block; }
+  .freq select { width:auto; font-size:13px; padding:4px 8px; }
+  .foot { position:fixed; left:0; right:0; bottom:0; background:var(--bg);
+          border-top:1px solid var(--line); padding:14px 24px; }
+  .foot-in { max-width:720px; margin:0 auto; display:flex; gap:12px; align-items:center; }
+  button { font:inherit; padding:11px 20px; border:1px solid var(--ink); background:var(--ink);
+           color:#fff; cursor:pointer; }
+  button:disabled { background:var(--bg); color:#bbb; border-color:var(--line); cursor:not-allowed; }
+  .msg { font-size:13px; color:var(--mid); }
+  .msg.ok { color:var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>빨간펜 — 문진</h1>
+  <p class="sub">기억나는 만큼만 답하세요. 필수는 <b>문항 1</b>과 <b>문항 10</b> 둘뿐입니다.</p>
+
+  <div class="bar"><span><b id="cnt">0</b> / 12 답변함</span><span id="need">필수 문항 2개 미입력</span></div>
+
+  <section>
+    <div class="sec-label">A · 대상</div>
+    <div class="q">
+      <label><span class="num">1</span>이 문서를 최종 승인하는 사람<span class="req">필수</span></label>
+      <p class="hint">이니셜로 적으세요. 김민수 → KMS</p>
+      <input type="text" id="reviewer" placeholder="KMS">
+    </div>
+    <div class="q">
+      <label><span class="num">2</span>보고 형태</label>
+      <div class="radios" id="report_form">
+        <label><input type="radio" name="rf" value="구두 회의">구두 회의</label>
+        <label><input type="radio" name="rf" value="문서 회람">문서 회람</label>
+        <label><input type="radio" name="rf" value="메신저">메신저</label>
+        <label><input type="radio" name="rf" value="대면 1:1">대면 1:1</label>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">B · 반려 경험</div>
+    <div class="q">
+      <label><span class="num">3</span>아래 중 <u>실제로 들어본 말</u>을 모두 고르세요</label>
+      <p class="hint">떠올리려 하지 말고 읽어 내려가면서 고르세요. 고른 항목 아래에 빈도가 열립니다.</p>
+      <div class="catalog" id="catalog"></div>
+    </div>
+    <div class="q">
+      <label><span class="num">5</span>위 보기에 없는데 자주 들은 말</label>
+      <p class="hint">쉼표로 구분, 3개까지</p>
+      <input type="text" id="heard_free" placeholder="집계 기간을 자주 물어봄">
+    </div>
+    <div class="q">
+      <label><span class="num">6</span>되돌아온 문서와 통과된 문서의 차이 한 줄</label>
+      <input type="text" id="diff_rejected_vs_passed">
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">C · 통과 조건</div>
+    <div class="q">
+      <label><span class="num">7</span>한 번에 통과된 문서가 있다면 무엇이 달랐나요</label>
+      <textarea id="passed_why"></textarea>
+    </div>
+    <div class="q">
+      <label><span class="num">8</span>이 사람이 문서에서 먼저 보는 곳</label>
+      <div class="radios" id="reads_first">
+        <label><input type="radio" name="rd" value="첫 장">첫 장</label>
+        <label><input type="radio" name="rd" value="숫자 표">숫자 표</label>
+        <label><input type="radio" name="rd" value="결론">결론</label>
+        <label><input type="radio" name="rd" value="일정">일정</label>
+        <label><input type="radio" name="rd" value="모름">모름</label>
+      </div>
+    </div>
+    <div class="q">
+      <label><span class="num">9</span>싫어하는 게 확실한 것</label>
+      <p class="hint">없으면 비워 두세요</p>
+      <input type="text" id="dislikes">
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">D · 이번 문서</div>
+    <div class="q">
+      <label><span class="num">10</span>이번에 보고할 문서의 목적 한 줄<span class="req">필수</span></label>
+      <input type="text" id="doc_purpose" placeholder="회의실 예약 시스템 개선안 승인 요청">
+    </div>
+    <div class="q">
+      <label><span class="num">11</span>이번 문서에서 스스로 불안한 지점</label>
+      <input type="text" id="my_worry">
+    </div>
+    <div class="q">
+      <label><span class="num">12</span>초안 텍스트</label>
+      <p class="hint">비워 두면 <b>가이드 모드</b>로, 붙여넣으면 <b>검수 모드</b>로 돌아갑니다.
+         리포의 drafts/sample-report.md 내용을 붙여넣어도 됩니다.</p>
+      <textarea id="draft" rows="6"></textarea>
+    </div>
+  </section>
+</div>
+
+<div class="foot"><div class="foot-in">
+  <button id="copy" disabled>답변 복사하기</button>
+  <span class="msg" id="msg">문항 1과 10을 채우면 활성화됩니다</span>
+</div></div>
+
+<script>
+// 이 12개 보기는 mcp_server/server.py 의 CATALOG 와 문자열이 정확히 같아야 한다.
+// 보기를 바꾸려면 두 파일을 함께 고친다.
+const CATALOG = [
+  "이 숫자 어디서 나왔어요?", "결론이 뭐예요?",
+  "대안은 없어요?", "너무 길어요",
+  "이거 누가 하는 거예요?", "언제까지예요?",
+  "비용은요?", "리스크는요?",
+  "전에 했던 거랑 뭐가 달라요?", "다른 팀이랑 얘기됐어요?",
+  "그래서 나한테 뭘 해달라는 거예요?", "이거 왜 지금이에요?"
+];
+const FREQ = ["4회 이상", "2~3회", "1회", "기억 안 남"];
+
+const box = document.getElementById("catalog");
+CATALOG.forEach((label, i) => {
+  const d = document.createElement("div");
+  d.className = "item";
+  d.innerHTML =
+    `<label><input type="checkbox" data-q="${label}" id="c${i}"><span>"${label}"</span></label>
+     <div class="freq"><select id="f${i}">${
+       FREQ.map(f => `<option${f === "2~3회" ? " selected" : ""}>${f}</option>`).join("")
+     }</select></div>`;
+  d.querySelector("input").addEventListener("change", e => {
+    d.classList.toggle("on", e.target.checked); refresh();
+  });
+  box.appendChild(d);
+});
+
+const val = id => (document.getElementById(id).value || "").trim();
+const radio = name => (document.querySelector(`input[name=${name}]:checked`) || {}).value || "";
+
+function heard() {
+  return CATALOG.map((label, i) =>
+    document.getElementById("c" + i).checked
+      ? { q: label, freq: document.getElementById("f" + i).value } : null
+  ).filter(Boolean);
+}
+
+function build() {
+  const h = heard();
+  const free = val("heard_free") ? val("heard_free").split(",").map(s => s.trim()).filter(Boolean).slice(0, 3) : [];
+  const answers = {
+    1: val("reviewer"), 2: radio("rf"), 3: h.length ? "y" : "", 4: h.length ? "y" : "",
+    5: free.length ? "y" : "", 6: val("diff_rejected_vs_passed"), 7: val("passed_why"),
+    8: radio("rd"), 9: val("dislikes"), 10: val("doc_purpose"),
+    11: val("my_worry"), 12: val("draft")
+  };
+  // 답 안 한 문항은 빈 문자열이 아니라 skipped 로 분리한다.
+  // "답이 없다"와 "안 물어봤다"를 구분해야 improve_by 를 계산할 수 있다.
+  const skipped = Object.keys(answers).filter(k => !answers[k]).map(Number);
+  return {
+    payload: {
+      reviewer: val("reviewer"),
+      report_form: radio("rf"),
+      heard: h,
+      heard_free: free,
+      diff_rejected_vs_passed: val("diff_rejected_vs_passed"),
+      passed_why: val("passed_why"),
+      reads_first: radio("rd"),
+      dislikes: val("dislikes"),
+      doc_purpose: val("doc_purpose"),
+      my_worry: val("my_worry"),
+      draft: val("draft") || "없음",
+      skipped
+    },
+    answered: 12 - skipped.length,
+    ready: !!val("reviewer") && !!val("doc_purpose")
+  };
+}
+
+function refresh() {
+  const s = build();
+  document.getElementById("cnt").textContent = s.answered;
+  document.getElementById("need").textContent = s.ready ? "필수 문항 완료" : "필수 문항 2개 미입력";
+  document.getElementById("copy").disabled = !s.ready;
+  const m = document.getElementById("msg");
+  if (s.ready) { m.textContent = "복사한 뒤 Claude Code 에 붙여넣으세요"; m.className = "msg ok"; }
+}
+
+document.querySelectorAll("input,textarea,select").forEach(el => {
+  el.addEventListener("input", refresh); el.addEventListener("change", refresh);
+});
+
+document.getElementById("copy").addEventListener("click", async () => {
+  const json = JSON.stringify(build().payload, null, 2);
+  const m = document.getElementById("msg");
+  try {
+    await navigator.clipboard.writeText(json);
+    m.textContent = "복사됐습니다. Claude Code 에 붙여넣고 /redpen 을 실행하세요";
+  } catch {
+    const t = document.createElement("textarea");
+    t.value = json; t.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;opacity:0";
+    document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove();
+    m.textContent = "복사됐습니다. Claude Code 에 붙여넣고 /redpen 을 실행하세요";
+  }
+  m.className = "msg ok";
+});
+
+refresh();
+</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "빨간펜 검수 결과",
+  "type": "object",
+  "required": ["mode", "reviewer", "evidence", "rubric", "questions", "total_prep_minutes"],
+  "properties": {
+    "mode":     { "type": "string", "enum": ["review", "guide"] },
+    "reviewer": { "type": "string", "description": "이니셜만" },
+    "evidence": {
+      "type": "object",
+      "required": ["answered", "skipped", "high_count"],
+      "properties": {
+        "answered":   { "type": "integer" },
+        "skipped":    { "type": "array", "items": { "type": "integer" } },
+        "high_count": { "type": "integer" },
+        "improve_by": { "type": "array", "items": { "type": "integer" } }
+      }
+    },
+    "rubric": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "confidence", "score", "basis", "action"],
+        "properties": {
+          "id":         { "type": "string" },
+          "title":      { "type": "string" },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"] },
+          "score":      { "type": "integer" },
+          "basis":      { "type": "array", "items": { "type": "string" } },
+          "action":     { "type": "string" }
+        }
+      }
+    },
+    "marks": {
+      "type": "array",
+      "description": "review 모드에서만 채운다",
+      "items": {
+        "type": "object",
+        "required": ["rubric_id", "line", "issue", "fix"],
+        "properties": {
+          "rubric_id": { "type": "string" },
+          "line":      { "type": ["integer", "array"] },
+          "issue":     { "type": "string" },
+          "fix":       { "type": "string" }
+        }
+      }
+    },
+    "guide": {
+      "type": "array",
+      "description": "guide 모드에서만 채운다",
+      "items": {
+        "type": "object",
+        "required": ["section", "must_include", "rubric_id"],
+        "properties": {
+          "section":      { "type": "string" },
+          "must_include": { "type": "array", "items": { "type": "string" } },
+          "rubric_id":    { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["q", "basis", "confidence", "speculative", "answer", "missing", "prep_minutes"],
+        "properties": {
+          "q":            { "type": "string" },
+          "basis":        { "type": "array", "items": { "type": "string" } },
+          "confidence":   { "type": "string", "enum": ["high", "medium", "low"] },
+          "speculative":  { "type": "boolean" },
+          "answer":       { "type": "string" },
+          "missing":      { "type": "array", "items": { "type": "string" } },
+          "prep_minutes": { "type": ["number", "string"] }
+        }
+      }
+    },
+    "total_prep_minutes": { "type": "number" },
+    "halts": { "type": "array", "items": { "type": "string" } }
+  }
+}

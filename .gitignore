@@ -1,0 +1,12 @@
+# 수강생 개인 데이터 — 커밋하지 않는다
+state/intake.json
+state/review.json
+state/rubrics/*.md
+drafts/current.md
+logs/*.jsonl
+
+# 실행 부산물
+__pycache__/
+*.pyc
+.venv/
+.DS_Store

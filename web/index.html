@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>빨간펜 — 결과</title>
+<style>
+  :root { --ink:#111; --mid:#777; --line:#ddd; --bg:#fff; --red:#c0392b; --faint:#fafafa; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-size:14px; line-height:1.6;
+         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif; }
+  .wrap { max-width:1400px; margin:0 auto; padding:36px 28px 80px; }
+  .head { border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:28px; }
+  .head h1 { font-size:24px; font-weight:600; margin:0 0 6px; letter-spacing:-.01em; }
+  .head h1 em { font-style:normal; color:var(--red); }
+  .meta { color:var(--mid); font-size:12.5px; }
+  .warn { background:#f4f4f4; border:1px solid var(--line); padding:10px 14px;
+          margin-bottom:20px; font-size:13px; }
+  .cols { display:grid; grid-template-columns:1.5fr 1fr; gap:36px; align-items:start; }
+  h2 { font-size:11px; letter-spacing:.14em; color:var(--mid); font-weight:600;
+       margin:0 0 12px; text-transform:uppercase; }
+  .rub { border-top:1px solid var(--line); margin-bottom:24px; }
+  .rub .row { border-bottom:1px solid var(--line); padding:9px 0; cursor:pointer; }
+  .rub .row.low { opacity:.4; }
+  .rub .row.high strong { font-weight:700; }
+  .badge { font-size:10.5px; letter-spacing:.06em; border:1px solid var(--line);
+           padding:1px 6px; margin-left:8px; color:var(--mid); }
+  .badge.high { border-color:var(--ink); color:var(--ink); }
+  .basis { display:none; color:var(--mid); font-size:12.5px; padding:6px 0 2px 2px; }
+  .row.open .basis { display:block; }
+  .act { color:var(--mid); font-size:12.5px; }
+  pre.doc { border:1px solid var(--line); padding:0; margin:0; overflow-x:auto;
+            font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; line-height:1.75; }
+  .ln { display:flex; padding:0 10px; border-left:3px solid transparent; }
+  .ln.bad { border-left-color:var(--red); background:#fdf6f5; cursor:pointer; }
+  .ln .n { color:#bbb; width:32px; flex:none; text-align:right; margin-right:14px; user-select:none; }
+  .fix { background:#fdf6f5; border-left:3px solid var(--red); padding:6px 10px 8px 56px;
+         font-size:12.5px; color:var(--ink); }
+  .fix b { color:var(--red); }
+  .gcard { border:1px solid var(--line); padding:14px 16px; margin-bottom:10px; }
+  .gcard h3 { margin:0 0 8px; font-size:14px; }
+  .gcard ul { margin:0; padding-left:18px; }
+  .qcard { border:1px solid var(--line); padding:14px 16px; margin-bottom:10px; }
+  .qcard.spec { opacity:.4; }
+  .qcard .q { font-size:15px; font-weight:600; margin-bottom:6px; }
+  .qcard .sm { font-size:12px; color:var(--mid); }
+  .qcard details { margin-top:8px; }
+  .qcard summary { cursor:pointer; font-size:12.5px; color:var(--mid); }
+  .miss { margin-top:8px; font-size:12.5px; }
+  .miss li { margin-bottom:2px; }
+  .miss::before { content:"● 준비 필요"; color:var(--red); font-size:11px; letter-spacing:.04em; }
+  .prep { margin-top:36px; border-top:2px solid var(--ink); padding-top:20px; }
+  .prep h2 { color:var(--ink); font-size:13px; }
+  .prep label { display:flex; gap:9px; align-items:flex-start; padding:7px 0;
+                border-bottom:1px solid var(--line); }
+  .improve { margin-top:14px; font-size:12.5px; color:var(--mid); }
+  .timeline { position:fixed; right:18px; bottom:18px; width:220px; max-height:200px; overflow:auto;
+              border:1px solid var(--line); background:var(--bg); padding:8px 10px;
+              font-family:ui-monospace,monospace; font-size:10.5px; color:var(--mid); }
+  button.cp { font:inherit; font-size:12px; padding:4px 9px; border:1px solid var(--line);
+              background:var(--bg); cursor:pointer; margin-top:8px; }
+  .empty { color:var(--mid); padding:60px 0; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="empty">불러오는 중…</div></div>
+<div class="timeline" id="tl" style="display:none"></div>
+
+<script>
+const esc = s => String(s ?? "").replace(/[&<>]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;" }[c]));
+
+async function boot() {
+  let r;
+  try {
+    r = await (await fetch("../state/review.json?" + Date.now())).json();
+  } catch {
+    document.getElementById("app").innerHTML =
+      '<div class="empty">아직 결과가 없습니다.<br><br>' +
+      'Claude Code 에서 <code>/redpen</code> 을 실행하세요.</div>';
+    return;
+  }
+
+  let doc = [];
+  if (r.mode === "review" && r.draft_path) {
+    try { doc = (await (await fetch("../" + r.draft_path)).text()).split("\n"); } catch {}
+  }
+
+  const ev = r.evidence || {};
+  const specOK = (r.questions || []).filter(q => !q.speculative).length;
+  const marks = r.marks || [];
+  const badLines = {};
+  marks.forEach(m => [].concat(m.line).forEach(n => (badLines[n] ||= []).push(m)));
+
+  const rubHTML = (r.rubric || []).slice().sort((a, b) => b.score - a.score).map(x => `
+    <div class="row ${x.confidence}" onclick="this.classList.toggle('open')">
+      <strong>${esc(x.id)}. ${esc(x.title)}</strong>
+      <span class="badge ${x.confidence}">${x.confidence} · ${x.score}점</span>
+      <div class="act">${esc(x.action)}</div>
+      <div class="basis">${(x.basis || []).map(esc).join("<br>")}</div>
+    </div>`).join("");
+
+  const leftHTML = r.mode === "review"
+    ? `<h2>초안 · 지적 ${marks.length}건</h2><pre class="doc">${
+        doc.map((l, i) => {
+          const n = i + 1, ms = badLines[n];
+          const line = `<div class="ln ${ms ? "bad" : ""}" ${ms ? `onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='block'?'none':'block'"` : ""}><span class="n">${n}</span><span>${esc(l) || "&nbsp;"}</span></div>`;
+          return ms ? line + `<div class="fix" style="display:none">${ms.map(m =>
+            `<b>${esc(m.rubric_id)}</b> ${esc(m.issue)}<br>→ ${esc(m.fix)}`).join("<br><br>")}</div>` : line;
+        }).join("")
+      }</pre>`
+    : `<h2>작성 가이드 · ${(r.guide || []).length}개 섹션</h2>${
+        (r.guide || []).map(g => `<div class="gcard"><h3>${esc(g.section)}
+          <span class="badge">${(g.rubric_id || []).join(" ")}</span></h3>
+          <ul>${(g.must_include || []).map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")
+      }`;
+
+  const qHTML = (r.questions || []).map((q, i) => `
+    <div class="qcard ${q.speculative ? "spec" : ""}">
+      <div class="q">${esc(q.q)}</div>
+      <div class="sm">${q.speculative ? "근거 없음" : "근거 " + (q.basis || []).join(", ")}
+        ${q.past_count ? " · 과거 " + q.past_count + "회" : ""}
+        <span class="badge ${q.confidence}">${q.confidence}</span></div>
+      <details><summary>답변 초안 보기</summary><div>${esc(q.answer)}</div></details>
+      ${(q.missing || []).length ? `<div class="miss"><ul>${
+        q.missing.map(m => `<li>${esc(m)}</li>`).join("")}</ul>준비 ${esc(q.prep_minutes)}분</div>` : ""}
+      <button class="cp" onclick='navigator.clipboard.writeText(${JSON.stringify(
+        `[질문] ${q.q}\n[답변] ${q.answer}\n[준비물] ${(q.missing || []).join(", ") || "없음"}`
+      )});this.textContent="복사됨"'>복사</button>
+    </div>`).join("");
+
+  const allMissing = (r.questions || []).flatMap(q => q.missing || []);
+
+  document.getElementById("app").innerHTML = `
+    <div class="head">
+      <h1>예상 지적 ${marks.length}건 · 근거 있는 질문 ${specOK}건 ·
+        준비 시간 <em>${r.total_prep_minutes}분</em></h1>
+      <div class="meta">리뷰어 ${esc(r.reviewer)} · 문진 12문항 중 ${ev.answered}개 답변 ·
+        확실한 항목 ${ev.high_count}개 · ${r.mode === "review" ? "검수 모드" : "가이드 모드"}</div>
+    </div>
+    ${ev.high_count === 0 ? '<div class="warn">확실한 근거가 없습니다. 아래 결과를 참고 수준으로 보세요.</div>' : ""}
+    ${(r.halts || []).length ? `<div class="warn">중단: ${r.halts.map(esc).join(" · ")}</div>` : ""}
+    <div class="cols">
+      <div>${leftHTML}</div>
+      <div>
+        <h2>체크리스트</h2><div class="rub">${rubHTML}</div>
+        <h2>예상 질문 ${(r.questions || []).length}건</h2>${qHTML}
+      </div>
+    </div>
+    <div class="prep">
+      <h2>회의 전 준비 목록</h2>
+      ${allMissing.length
+        ? allMissing.map(m => `<label><input type="checkbox"><span>${esc(m)}</span></label>`).join("")
+        : '<div class="meta">준비할 항목이 없습니다.</div>'}
+      ${(ev.improve_by || []).length
+        ? `<div class="improve">정확도를 올리려면: 문항 ${ev.improve_by.join(", ")}에 답해 보세요.</div>` : ""}
+    </div>`;
+
+  try {
+    const t = await (await fetch("../logs/trace.jsonl?" + Date.now())).text();
+    const rows = t.trim().split("\n").filter(Boolean).slice(-14).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+    if (rows.length) {
+      document.getElementById("tl").style.display = "block";
+      document.getElementById("tl").innerHTML = rows.map(x =>
+        `${(x.ts || "").slice(11, 19)} ${esc(x.agent || x.ev)} ${esc(x.ev)}`).join("<br>");
+    }
+  } catch {}
+}
+boot();
+setInterval(boot, 2000);
+</script>
+</body>
+</html>

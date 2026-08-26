@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "redpen-desk": {
+      "command": "uv",
+      "args": ["run", "--with", "mcp", "python", "mcp_server/server.py"]
+    }
+  }
+}

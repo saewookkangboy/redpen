@@ -1,0 +1,179 @@
+{
+  "mode": "review",
+  "reviewer": "KMS",
+  "draft_path": "drafts/sample-report.md",
+  "evidence": {
+    "answered": 11,
+    "skipped": [
+      9
+    ],
+    "high_count": 1,
+    "improve_by": [
+      11
+    ]
+  },
+  "rubric": [
+    {
+      "id": "R1",
+      "title": "수치에 출처·기간·집계기준",
+      "confidence": "high",
+      "score": 5,
+      "basis": [
+        "문항3 «이 숫자 어디서 나왔어요?» (4회 이상, 3점)",
+        "문항5 «집계 기간을 자주 물어봄» (+1)",
+        "문항7 «표 아래에 출처와 집계 기준을 다 달았을 때» (+1)"
+      ],
+      "action": "표 각주에 '출처 / 기간 / 집계 기준' 3종 고정 배치"
+    },
+    {
+      "id": "R2",
+      "title": "결론이 첫 화면에 있을 것",
+      "confidence": "medium",
+      "score": 3,
+      "basis": [
+        "문항3 «결론이 뭐예요?» (2~3회, 2점)",
+        "문항6 «통과한 건 첫 장에 결론이 있었음» (+1)"
+      ],
+      "action": "첫 10줄 안에 결론 문장과 숫자 배치"
+    },
+    {
+      "id": "R3",
+      "title": "대안은 2개 이상",
+      "confidence": "medium",
+      "score": 2,
+      "basis": [
+        "문항3 «대안은 없어요?» (2~3회, 2점)"
+      ],
+      "action": "채택안 + 검토했으나 버린 안 1개를 함께 제시"
+    },
+    {
+      "id": "R7",
+      "title": "비용 근거",
+      "confidence": "medium",
+      "score": 2,
+      "basis": [
+        "문항3 «비용은요?» (2~3회, 2점)"
+      ],
+      "action": "총액이 아니라 산출 근거와 단가를 함께 제시"
+    },
+    {
+      "id": "R6",
+      "title": "완료 시점 명시",
+      "confidence": "low",
+      "score": 1,
+      "basis": [
+        "문항3 «언제까지예요?» (1회, 1점)"
+      ],
+      "action": "일정 표에 시작·종료일과 마일스톤 표기"
+    }
+  ],
+  "marks": [
+    {
+      "rubric_id": "R2",
+      "line": 1,
+      "issue": "첫 10줄에 결론과 숫자가 없다. 배경부터 시작한다.",
+      "fix": "제목 아래에 '결론: 체크인 자동해제 도입, 주당 30시간 회수' 한 줄을 넣는다"
+    },
+    {
+      "rubric_id": "R11",
+      "line": 1,
+      "issue": "승인자에게 무엇을 요청하는지 문서에 없다",
+      "fix": "첫머리에 '요청: 3분기 내 파일럿 승인' 한 줄을 둔다"
+    },
+    {
+      "rubric_id": "R1",
+      "line": 9,
+      "issue": "18%·62%·30시간·7% 어느 것에도 집계 기간과 출처가 없다",
+      "fix": "각 수치 뒤에 (총무팀 예약로그, 2026-04~06) 형태로 기간과 출처를 붙인다"
+    },
+    {
+      "rubric_id": "R3",
+      "line": 13,
+      "issue": "QR과 메신저를 언급했으나 대안 비교가 아니라 결론만 있다",
+      "fix": "두 안을 표로 놓고 버린 이유를 한 줄씩 적는다"
+    },
+    {
+      "rubric_id": "R7",
+      "line": 19,
+      "issue": "비용이 '추후 협의'로 비어 있다",
+      "fix": "개발 공수와 단가만이라도 범위로 적는다"
+    },
+    {
+      "rubric_id": "R6",
+      "line": 19,
+      "issue": "일정이 '추후 협의'로 비어 있다",
+      "fix": "파일럿 시작일과 평가 시점 두 개만이라도 못 박는다"
+    }
+  ],
+  "questions": [
+    {
+      "q": "이 숫자 어디서 나온 거예요? 언제부터 언제까지예요?",
+      "basis": [
+        "R1"
+      ],
+      "confidence": "high",
+      "speculative": false,
+      "past_count": 4,
+      "answer": "총무팀 예약 로그 기준입니다. 다만 초안에 집계 기간이 적혀 있지 않아 지금은 정확히 답할 수 없습니다.",
+      "missing": [
+        "18%·62%·7%의 집계 기간",
+        "노쇼 30시간의 산출식"
+      ],
+      "prep_minutes": 20
+    },
+    {
+      "q": "그래서 결론이 뭐예요?",
+      "basis": [
+        "R2"
+      ],
+      "confidence": "medium",
+      "speculative": false,
+      "past_count": 3,
+      "answer": "체크인 미이행 시 자동 해제를 도입해 주당 30시간의 유휴를 회수하자는 제안입니다.",
+      "missing": [],
+      "prep_minutes": 0
+    },
+    {
+      "q": "대안은 없어요? QR은 왜 뺐어요?",
+      "basis": [
+        "R3"
+      ],
+      "confidence": "medium",
+      "speculative": false,
+      "past_count": 3,
+      "answer": "메신저 연동이 하드웨어 없이 기존 인증을 쓸 수 있어 택했습니다. QR을 버린 근거는 초안에 정량으로 없습니다.",
+      "missing": [
+        "QR 방식 설치 비용 견적"
+      ],
+      "prep_minutes": 15
+    },
+    {
+      "q": "비용은요?",
+      "basis": [
+        "R7"
+      ],
+      "confidence": "medium",
+      "speculative": false,
+      "past_count": 3,
+      "answer": "아직 산정 전입니다.",
+      "missing": [
+        "개발 공수 추정",
+        "정보시스템팀 단가"
+      ],
+      "prep_minutes": 30
+    },
+    {
+      "q": "영업본부 노쇼가 높다고 했는데 그쪽이랑 얘기됐어요?",
+      "basis": [],
+      "confidence": "low",
+      "speculative": true,
+      "answer": "초안에 협의 내용이 없어 답변할 수 없습니다.",
+      "missing": [
+        "영업본부 협의 여부"
+      ],
+      "prep_minutes": 10
+    }
+  ],
+  "total_prep_minutes": 75,
+  "halts": []
+}
